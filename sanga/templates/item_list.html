@@ -1,0 +1,75 @@
+{% load thumbnail %}
+{% load i18n %}
+
+{% verbatim %}
+<!-- определяем приложение и контроллер -->
+<div data-ng-app="myApp" data-ng-controller="pCtrl" class="container">
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <!-- Поле, которое фильтрует уже полученный список -->
+            <label>Имя<input type="text" data-ng-model="search"></label>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table table-bordered table-striped">
+        <thead>
+        <tr>
+            <td>Логин</td>
+            <td>Духовное имя</td>
+            <td>ФИО</td>
+        </tr>
+        </thead>
+                <!-- Устанавливаем фильтр в цикле, чтобы он фильтровал по названию -->
+                <tr data-ng-repeat="x in subs | filter: title=search">
+                    <td>
+                        <a href='{{ x.get_absolute_url }}' title="{{x.username}}">
+                            <img src='{{x.url_avatar}}' alt='{{x.username}}' title='{{x.username}}'
+                                 width="{{ x.avatar_width }}" height="{{ x.avatar_height }}" class="img-rounded"/>
+                        </a>
+                        <a href='{{ x.get_absolute_url }}' title='{{ x.username }}'>
+                            {{ x.username }}
+                        </a>
+                    </td>
+                    <td>{{ x.spiritual_name }}</td>
+                    <td>{{ x.last_name }} {{ x.first_name }} {{ x.middle_name }}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+{% endverbatim %}
+
+<script>
+    // инициализируем приложение
+    var app = angular.module('myApp', []);
+    // инициализируем контроллер
+    app.controller('pCtrl', function ($scope, $http) {
+        // первоначальный запрос без параметров и получение ответа от сервера
+        get_page('/subs/', null);
+
+        // функция отправки запроса и присвоение результата переменной subs
+        function get_page(url, params) {
+            if (url !== null) {
+                var conf = {
+                    url: url,
+                    method: 'GET',
+                    timeout: 600,
+                    params: params
+                };
+                var promise = $http(conf);
+                promise.success(function (response) {
+                    $scope.subs = response;
+                });
+            }
+        }
+
+        /* обертка, последующий вызов get_page с аргументом из $scope.filter,
+         фильтруем тоже по названию */
+        $scope.get_filter = function () {
+            get_page('/subs/', {username: $scope.filter});
+        };
+    });
+</script>
+
+

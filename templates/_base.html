@@ -1,0 +1,100 @@
+{% spaceless %}
+
+{#    {% load compress %}#}
+    {% load staticfiles %}
+    {% load i18n %}
+
+    <!DOCTYPE HTML>
+    <html lang="ru">
+
+    <head>
+        <meta charset="utf-8">
+        <title>{% block title %}{% endblock title %} | {{ settings.SITE_NAME }}</title>
+
+        <meta name="description" content="{% block meta_description %}{{ settings.SITE_DESCRIPTION }}{% endblock meta_description %}" />
+        <meta name="keywords" content="{% block meta_keywords %}{% endblock meta_keywords %}" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+        {% block meta_og %}{% endblock %}
+
+{#        <link rel="icon" type="image/x-icon" href="{% static 'dcf/img/favicon.ico' %}" />#}
+
+        {# <!-- Custom styles for this template --> #}
+{#        {% compress css %}#}
+            <link href="{% static 'css/jumbotron-narrow.css' %}" rel="stylesheet">
+            <link href="{% static 'css/lightbox.css' %}" rel="stylesheet" type="text/css"/>
+            <link href="{% static 'css/style.css' %}" rel="stylesheet" type="text/css"/>
+{#        {% endcompress %}#}
+
+        <script src="{% static 'js/angular.js' %}"></script>
+        {% block scripts %}
+        {% endblock %}
+    </head>
+
+    <body>
+    <div class="container">
+
+        <div class="header clearfix">
+            <nav>
+                <ul class="nav nav-pills pull-right">
+                    <li role="presentation"><a href="/">{% trans "Home" %}</a></li>
+                    {% if user.is_authenticated %}
+                        <li role="presentation" class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                <span class="glyphicon glyphicon-user"></span> {{ user.get_username }} <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a href="{% url 'logout' %}?next=/">{% trans "Logout" %}</a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li role="presentation"><a href="{% url "login"%}" title="{% trans "Login" %}"><span class="glyphicon glyphicon-user"></span> {% trans "Login" %}</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+            <h3 class="text-muted">{{settings.SITE_NAME}}</h3>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class='row'>
+                    <div class="col-md-12">
+                        <div {% if message.tags %} class="alert alert-{{ message.tags }}"{% endif %}>
+                            <button type="button" class="close" data-dismiss="alert">×</button>
+                            {{ message|safe }}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        {% block body %}
+
+        {% endblock %}
+
+        <footer class="footer">
+            <p>
+                <span class="pull-left">{{ settings.SITE_NAME }}</span>
+{#                <span class="pull-right">{% trans "Автор:" %} Премананда</span>#}
+            </p>
+        </footer>
+
+    </div> <!-- container -->
+
+    {# <!-- Latest compiled and minified CSS --> #}
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+
+    {# <!-- jQuery (necessary for Bootstrap's JavaScript plugins) --> #}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+
+    {# <!-- Latest compiled and minified JavaScript --> #}
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+
+    <script src="{%  static 'js/lightbox.min.js' %}"></script>
+
+    {% block ext_scripts%}{% endblock %}
+
+    </body>
+    </html>
+{% endspaceless %}

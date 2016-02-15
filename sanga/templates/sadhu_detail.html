@@ -1,0 +1,29 @@
+{% extends "_base.html" %}
+{% load thumbnail %}
+
+{% block title %}{{ object }}{% endblock %}
+
+{% block body %}
+
+    <div class="row">
+        <div class="col-lg-12">
+        <td>
+            {% if object.image %}
+                {% thumbnail object.image.file "250x250" crop="center" as im %}
+                    <a href='{{ object.get_absolute_url }}' title="{{object.username}}">
+                        <img src='{{im.url}}' alt='{{object.username}}' title='{{object.username}}'  width="{{ im.width }}" height="{{ im.height }}" class="img-rounded" />
+                    </a>
+                {% endthumbnail %}
+            {% endif %}
+            <a href='{{ object.get_absolute_url }}' title='{{object.username}}'>
+                {{object.username}}
+            </a>
+        </td>
+            <td>{{object.spiritual_name}}</td>
+            <td>{{object.last_name}} {{object.first_name}} {{object.middle_name}}</td>
+    </tr>
+        </div>
+    </div>
+
+
+{% endblock body %}
