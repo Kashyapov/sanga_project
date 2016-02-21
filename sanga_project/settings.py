@@ -130,3 +130,6 @@ REST_FRAMEWORK = {
 }
 
 THUMBNAIL_DEBUG = True
+
+LOCALE_PATHS = (
+    os.path.join(BASE_DIR, 'locale'), )

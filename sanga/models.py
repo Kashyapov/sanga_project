@@ -3,41 +3,142 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseU
 from django.core import validators
 from django.core.mail import send_mail
 from django.db import models
+from django.db.models import Sum
 from django.utils import timezone
 from django.utils.http import urlquote
 from django.utils.translation import ugettext_lazy as _
+from sanga_project import settings
+
+
+class SignMonk(models.Model):
+    name = models.CharField(_('Sign monk'), max_length=50)
+
+    class Meta:
+        verbose_name_plural = _('Sign monk')
+
+    def __unicode__(self):
+        return self.name
+
+
+class StatusVidyaSadhana(models.Model):
+    name = models.CharField(_('Status vidya sadhana'), max_length=50)
+
+    class Meta:
+        verbose_name_plural = _('Status vidya sadhana')
+
+    def __unicode__(self):
+        return self.name
+
+
+class StatusBhakti(models.Model):
+    name = models.CharField(_('Status bhakti'), max_length=100)
+
+    class Meta:
+        verbose_name_plural = _('Status bhakti')
+
+    def __unicode__(self):
+        return self.name
+
+
+class StatusDonate(models.Model):
+    name = models.CharField(_('Status donate'), max_length=100)
+
+    class Meta:
+        verbose_name_plural = _('Status donate')
+
+    def __unicode__(self):
+        return self.name
+
+
+class Level(models.Model):
+    name = models.CharField(_('Level'), max_length=50)
+
+    class Meta:
+        verbose_name_plural = _('Level')
+
+    def __unicode__(self):
+        return self.name
+
+
+class Citizenship(models.Model):
+    name = models.CharField(_('Citizenship'), max_length=50)
+
+    class Meta:
+        verbose_name_plural = _('Citizenship')
+
+    def __unicode__(self):
+        return self.name
+
+
+class AdditionalCharacteristic(models.Model):
+    name = models.CharField(_('Additional characteristic'), max_length=100, default='', null=False, blank=False)
+
+    class Meta:
+        verbose_name_plural = _('Additional characteristic')
+
+    def __unicode__(self):
+        return self.name
+
+
+class Town(models.Model):
+    name = models.CharField(_('Town'), max_length=50)
+
+    class Meta:
+        verbose_name_plural = _('Towns')
+
+    def __unicode__(self):
+        return self.name
+
+
+class Country(models.Model):
+    name = models.CharField(_('Country'), max_length=50)
+
+    class Meta:
+        verbose_name_plural = _('Countrys')
+
+    def __unicode__(self):
+        return self.name
+
+
+class RatingSadhu(models.Model):
+    """
+    Таблица для учета заслуг (рейтинга) практикующих
+    rating_from - кто оценивает
+    rating_to - кого оценивают
+    """
+    rating_from = models.ForeignKey('Sadhu', verbose_name=_('rating from'), related_name='rating_from')
+    rating_to = models.ForeignKey('Sadhu', related_name='rating_to')
+    comment = models.CharField(_('Comment'), max_length=50, blank=True, default='')
+    rating = models.IntegerField(_('Rating'))
+
+    class Meta:
+        verbose_name_plural = _('Rating')
+
+    def __unicode__(self):
+        return u'%s  %s  %s' % (self.rating_from, self.name, self.rating)
+
 
 class CustomUserManager(BaseUserManager):
-    use_in_migrations = True
-
-    def _create_user(self, username, email, password,
-                     is_staff, is_superuser, **extra_fields):
-        """
-        Creates and saves a User with the given username, email and password.
-        """
-        now = timezone.now()
+    def create_user(self, username, email, password=None):
+        if not email:
+            raise ValueError('User must have email')
         if not username:
-            raise ValueError('The given username must be set')
-        email = self.normalize_email(email)
-        user = self.model(username=username, email=email,
-                          is_staff=is_staff, is_active=True,
-                          is_superuser=is_superuser,
-                          date_joined=now, **extra_fields)
+            raise ValueError('User must have username')
+        user = self.model(username=username, email=self.normalize_email(email))
+        user.is_active = True
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_user(self, username, email=None, password=None, **extra_fields):
-        return self._create_user(username, email, password, False, False,
-                                 **extra_fields)
-
-    def create_superuser(self, username, email, password, **extra_fields):
-        return self._create_user(username, email, password, True, True,
-                                 **extra_fields)
+    def create_superuser(self, username, email, password):
+        user = self.create_user(username=username, email=email, password=password)
+        user.is_staff = True
+        user.is_superuser = True
+        user.save(using=self._db)
+        return user
 
 
 class Sadhu(AbstractBaseUser, PermissionsMixin):
-
     username = models.CharField(
         _('username'),
         max_length=30,
@@ -54,11 +155,12 @@ class Sadhu(AbstractBaseUser, PermissionsMixin):
             'unique': _("A user with that username already exists."),
         },
     )
-    spiritual_name = models.CharField(_('spiritual_name'), max_length=50, blank=True, default='')
-    first_name = models.CharField(_('first name'), max_length=30, blank=True)
-    middle_name = models.CharField(_('middle_name'), max_length=30, blank=True, default='')
+    spiritual_name = models.CharField(_('spiritual_name'), max_length=50, blank=True)
     last_name = models.CharField(_('last name'), max_length=30, blank=True)
+    first_name = models.CharField(_('first name'), max_length=30, blank=True)
+    middle_name = models.CharField(_('middle_name'), max_length=30, blank=True)
     email = models.EmailField(_('email address'), blank=True)
+
     is_staff = models.BooleanField(_('staff status'), default=False,
                                    help_text=_('Designates whether the user can log into this admin site.'))
     is_active = models.BooleanField(_('active'), default=True,
@@ -69,14 +171,14 @@ class Sadhu(AbstractBaseUser, PermissionsMixin):
     objects = CustomUserManager()
 
     USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ['email']
 
     class Meta:
         verbose_name = _('user')
         verbose_name_plural = _('users')
 
     def get_absolute_url(self):
-        return "/users/%s/" % urlquote(self.email)
+        return "/users/%s/" % self.id
 
     def get_full_name(self):
         """
@@ -97,134 +199,45 @@ class Sadhu(AbstractBaseUser, PermissionsMixin):
         """
         send_mail(subject, message, from_email, [self.email])
 
+    def __unicode__(self):
+        return self.username
 
-class PriznakMonk(models.Model):
 
-    name = models.CharField('Сангха', max_length=30)
+class SadhuAdditional(models.Model):
+    sadhu = models.OneToOneField(Sadhu)
+    sign_monk = models.ForeignKey(SignMonk, verbose_name=_('Sign monk'), blank=True, null=True, on_delete=models.PROTECT)
+    image = models.ImageField(_('Photo'), upload_to='images', blank=True)
+    country = models.ForeignKey(Country, verbose_name=_('Country'),blank=True, null=True, on_delete=models.PROTECT)
+    town = models.ForeignKey(Town, verbose_name=_('Town'), blank=True, null=True, on_delete=models.PROTECT)
+    date_form = models.DateField(_('Date of filling in the questionnaire'), blank=True, null=True, default=timezone.now)
+    phone = models.CharField(_('Phone'), max_length=30, blank=True, default='')
+    soc_login = models.CharField(_('Skype, VK, Facebook'), max_length=100, blank=True, default='')
+    status_vidya_sadhana = models.ForeignKey(StatusVidyaSadhana, verbose_name=_('Status vidya sadhana'), blank=True, null=True, on_delete=models.PROTECT)
+    status_bhakti = models.ForeignKey(StatusBhakti, verbose_name=_('Status bhakti'), blank=True, null=True, on_delete=models.PROTECT)
+    status_donate = models.ForeignKey(StatusDonate, verbose_name=('Status '), blank=True, null=True, on_delete=models.PROTECT)
+    note = models.CharField(_('Note'), max_length=255, blank=True, default='')
+    address = models.CharField(_('Address'), max_length=255, blank=True, default='')
+    birthday = models.DateField(_('Birthday'), blank=True, null=True)
+    level = models.ForeignKey(Level, verbose_name=_('Level'), blank=True, null=True, on_delete=models.PROTECT)
+    symbol_of_faith = models.DateField(_('Symbol of faith'), blank=True, null=True)
+    sharanam = models.DateField(_('Sharanam'), blank=True, null=True)
+    place_of_birth = models.CharField(_('Place of Birth'), max_length=255, blank=True, default='')
+    citizenship = models.ForeignKey(Citizenship, verbose_name=_('Citizenship'), blank=True, null=True, on_delete=models.PROTECT)
+    education = models.CharField(_('Education'), max_length=255, blank=True, default='')
+    max_add_rating = models.IntegerField(_('How can add rating'), default=1)
+    additional_characteristic = models.ForeignKey(AdditionalCharacteristic, verbose_name=_('Additional characteristic'), blank=True, null=True, on_delete=models.PROTECT)
+
+    def rating_sum(self):
+        return RatingSadhu.objects.filter(rating_to = self.id).aggregate(Sum('rating'))
 
     class Meta:
-        verbose_name_plural = 'Сангха'
+        verbose_name = _('Sadhu additional')
+        verbose_name_plural = _('Sadhus additional')
 
     def __unicode__(self):
-            return self.name
+        return self.sadhu.username
 
-class StatusVidyaSadhahy(models.Model):
-    name = models.CharField('Статус видья-садханы', max_length=30)
 
-    class Meta:
-        verbose_name_plural = 'Статус видья-садханы'
 
-    def __unicode__(self):
-            return self.name
 
-class StatusVSlugenii(models.Model):
-    name = models.CharField('Статус в служении', max_length=30)
 
-    class Meta:
-        verbose_name_plural = 'Статус в служении'
-
-    def __unicode__(self):
-            return self.name
-
-class StatusGertvovatilya(models.Model):
-    name = models.CharField('Статус жертвователя', max_length=30)
-
-    class Meta:
-        verbose_name_plural = 'Статус жертвователя'
-
-    def __unicode__(self):
-            return self.name
-
-class Stupen(models.Model):
-    name = models.CharField('Ступень', max_length=30)
-
-    class Meta:
-        verbose_name_plural = 'Ступень'
-
-    def __unicode__(self):
-            return self.name
-
-class Gragdanstvo(models.Model):
-    name = models.CharField('Гражданство', max_length=30)
-
-    class Meta:
-        verbose_name_plural = 'Гражданство'
-
-    def __unicode__(self):
-            return self.name
-
-class AdditionalCharacteristic(models.Model):
-    name = models.CharField(_('Additional characteristic'), max_length=100, default='', null=False, blank=False)
-
-    class Meta:
-        verbose_name_plural = _('Additional characteristic')
-
-    def __unicode__(self):
-            return self.name
-
-class Town(models.Model):
-    name = models.CharField('Город', max_length=50)
-
-    class Meta:
-        verbose_name_plural = 'Город'
-
-    def __unicode__(self):
-            return self.name
-
-class Country(models.Model):
-    name = models.CharField('Страна', max_length=50)
-
-    class Meta:
-        verbose_name_plural = 'Страна'
-
-    def __unicode__(self):
-            return self.name
-
-class RatingSadhu(models.Model):
-    rating_from = models.ForeignKey('Sadhu', verbose_name='Рейтинг от', related_name='rating_from')
-    rating_to = models.ForeignKey('Sadhu', related_name='rating_to')
-    name = models.CharField('Комментарий', max_length=50, blank=True, default='')
-    rating = models.IntegerField('Заслуги')
-
-    class Meta:
-        verbose_name_plural = 'Заслуги'
-
-    def __unicode__(self):
-            return u'%s  %s  %s' % (self.rating_from, self.name, self.rating)
-
-# class SadhuAdditional(models.Model):
-#     priznak_monk = models.ForeignKey(PriznakMonk, verbose_name='Сангха', blank=True, null=True, on_delete=models.SET_)
-#
-#     image = models.ImageField('Фото', upload_to='images', blank=True)
-#     country = models.ForeignKey(Country, verbose_name='Страна', blank=True, null=True, on_delete=models.SET_NULL)
-#     town = models.ForeignKey(Town, verbose_name='Город', blank=True, null=True, on_delete=models.SET_NULL)
-#     date_ankety = models.DateField('Дата заполнения анкеты', blank=True, default=now)
-#     phone = models.CharField('Телефон', max_length=30, blank=True, default='')
-#     soc_login = models.CharField('Скайп, ВК, Фейсбук', max_length=100, blank=True, default='')
-#     status_vidya = models.ForeignKey(StatusVidyaSadhahy, verbose_name='Статус видья-садханы', blank=True, null=True, on_delete=models.SET_NULL)
-#     status_v_slugenii = models.ForeignKey(StatusVSlugenii, verbose_name='Статус в служении', blank=True, null=True, on_delete=models.SET_NULL)
-#     status_gertvovatilya = models.ForeignKey(StatusGertvovatilya, verbose_name='Статус жертвователя', blank=True, null=True, on_delete=models.SET_NULL)
-#     primechanie = models.CharField('примечание', max_length=255, blank=True, default='')
-#     address = models.CharField('Адрес', max_length=255, blank=True, default='')
-#     den_rogdeniya = models.DateField('День рождения', null=True, blank=True )
-#     stupen = models.ForeignKey(Stupen, verbose_name='Ступень', blank=True, null=True, on_delete=models.SET_NULL)
-#     simvol_very = models.DateField('Сим Веры', blank=True, null=True)
-#     pribegishe = models.DateField('Прибежище', blank=True, null=True)
-#     mesto_rogdeniya = models.CharField('Место рождения', max_length=255, blank=True, default='')
-#     gragdanstvo = models.ForeignKey(Gragdanstvo, verbose_name='Гражданство', blank=True, null=True, on_delete=models.SET_NULL)
-#     obrazovanie = models.CharField('Образование', max_length=255, blank=True, default='')
-#     max_add_rating = models.IntegerField('Сколько может добавить заслуг', default=1)
-#     additional_characteristic = models.ForeignKey(AdditionalCharacteristic, verbose_name=_('Additional characteristic'), blank=True, null=True, on_delete=models.PROTECT)
-#
-#     def rating_sum(self):
-#         return RatingSadhu.objects.filter(rating_to = self.id).aggregate(Sum('rating'))
-#
-#     class Meta:
-#         verbose_name_plural = 'Садху'
-#
-#     def get_absolute_url(self):
-#         return 'list/' + str(self.pk)
-#
-#     def __unicode__(self):
-#         return self.username
-#

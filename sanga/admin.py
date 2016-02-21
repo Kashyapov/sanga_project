@@ -1,7 +1,12 @@
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin
-from models import Sadhu, StatusVidyaSadhahy, StatusVSlugenii, StatusGertvovatilya, Stupen, Gragdanstvo, RatingSadhu, \
-    Country, Town, PriznakMonk, AdditionalCharacteristic
+from models import Sadhu, SignMonk, StatusVidyaSadhana, StatusBhakti, StatusDonate, Level, Citizenship, RatingSadhu, \
+    Country, Town, AdditionalCharacteristic, SadhuAdditional
+from sanga_project import settings
+
+
+class SadhuAdditionalInline(admin.StackedInline):
+    model = SadhuAdditional
+    StackedInline = 'sadhu'
 
 
 class RatingSadhuInline(admin.TabularInline):
@@ -9,44 +14,35 @@ class RatingSadhuInline(admin.TabularInline):
     fk_name = 'rating_to'
     extra = 1
 
+
 class SadhuAdmin(admin.ModelAdmin):
 
     # date_hierarchy = "date_ankety"
-    # list_display = ('username', 'spiritual_name', 'last_name', 'first_name', 'middle_name', 'country', 'town', 'email',
-    #                 'rating_sum')
+    list_display = ('username', 'spiritual_name', 'last_name', 'first_name', 'middle_name')
     # list_filter = ('priznak_monk', 'country', 'town', 'status_vidya', 'status_v_slugenii', 'status_gertvovatilya')
-    # search_fields = ('username', 'spiritual_name', 'last_name')
-    #
-    # fieldsets = (
-    #     (None, {'fields': ('username',
-    #                        'spiritual_name', 'last_name', 'first_name','middle_name',
-    #                        'priznak_monk',
-    #                        'country', 'town', 'address',
-    #                        'status_vidya', 'status_v_slugenii',
-    #                        'status_gertvovatilya', 'primechanie',
-    #                        'date_ankety', 'phone', 'soc_login', 'email',
-    #                        'image',
-    #                        'stupen', 'simvol_very', 'pribegishe', 'gragdanstvo', 'obrazovanie',
-    #                        'den_rogdeniya', 'mesto_rogdeniya',
-    #                        'max_add_rating',
-    #                        'additional_characteristic',
-    #                        'date_joined', 'is_active',
-    #                        'is_staff', 'is_superuser', 'password')}),
-    # )
+    search_fields = ('username', 'spiritual_name', 'last_name')
+
+    fieldsets = (
+        (None, {'fields': ('username',
+                           'spiritual_name', 'last_name', 'first_name','middle_name',
+                           'date_joined', 'is_active',
+                           'is_staff', 'is_superuser', 'password')}),
+    )
 
     inlines = [
-            RatingSadhuInline,
+            SadhuAdditionalInline, RatingSadhuInline,
     ]
 
 # Register your models here.
 admin.site.register(Sadhu, SadhuAdmin)
-admin.site.register(StatusVidyaSadhahy)
-admin.site.register(StatusVSlugenii)
-admin.site.register(StatusGertvovatilya)
-admin.site.register(Stupen)
-admin.site.register(Gragdanstvo)
+admin.site.register(StatusVidyaSadhana)
+admin.site.register(StatusBhakti)
+admin.site.register(StatusDonate)
+admin.site.register(Level)
+admin.site.register(Citizenship)
 admin.site.register(AdditionalCharacteristic)
 admin.site.register(RatingSadhu)
 admin.site.register(Country)
 admin.site.register(Town)
-admin.site.register(PriznakMonk)
+admin.site.register(SignMonk)
+admin.site.register(SadhuAdditional)
