@@ -1,0 +1,203 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-02-21 13:31+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#: sanga/models.py:14 sanga/models.py:17 sanga/models.py:208
+msgid "Sign monk"
+msgstr "Монашеская/Мирянская сангха"
+
+#: sanga/models.py:24 sanga/models.py:27 sanga/models.py:215
+msgid "Status vidya sadhana"
+msgstr "Статус видья-садханы"
+
+#: sanga/models.py:34 sanga/models.py:37 sanga/models.py:216
+msgid "Status bhakti"
+msgstr "Статус в служении"
+
+#: sanga/models.py:44 sanga/models.py:47
+msgid "Status donate"
+msgstr "Статус жертвователя"
+
+#: sanga/models.py:54 sanga/models.py:57 sanga/models.py:221
+msgid "Level"
+msgstr "Ступень"
+
+#: sanga/models.py:64 sanga/models.py:67 sanga/models.py:225
+msgid "Citizenship"
+msgstr "Гражданство"
+
+#: sanga/models.py:74 sanga/models.py:77 sanga/models.py:228
+msgid "Additional characteristic"
+msgstr "Дополнительная характеристика"
+
+#: sanga/models.py:84 sanga/models.py:211
+msgid "Town"
+msgstr "Город"
+
+#: sanga/models.py:87
+msgid "Towns"
+msgstr "Города"
+
+#: sanga/models.py:94 sanga/models.py:210
+msgid "Country"
+msgstr "Страна"
+
+#: sanga/models.py:97
+msgid "Countrys"
+msgstr "Страны"
+
+#: sanga/models.py:109
+msgid "rating from"
+msgstr "кто оценивает"
+
+#: sanga/models.py:111
+msgid "Comment"
+msgstr "Комментарий"
+
+#: sanga/models.py:112 sanga/models.py:115
+msgid "Rating"
+msgstr "Заслуги"
+
+#: sanga/models.py:143
+msgid "username"
+msgstr "логин"
+
+#: sanga/models.py:146
+msgid "Required. 30 characters or fewer. Letters, digits and @/./+/-/_ only."
+msgstr ""
+
+#: sanga/models.py:150
+msgid ""
+"Enter a valid username. This value may contain only letters, numbers and @/./"
+"+/-/_ characters."
+msgstr ""
+
+#: sanga/models.py:155
+msgid "A user with that username already exists."
+msgstr ""
+
+#: sanga/models.py:158
+msgid "spiritual_name"
+msgstr "Духовное имя"
+
+#: sanga/models.py:159
+msgid "last name"
+msgstr "Фамилия"
+
+#: sanga/models.py:160
+msgid "first name"
+msgstr "Имя"
+
+#: sanga/models.py:161
+msgid "middle_name"
+msgstr "Отчество"
+
+#: sanga/models.py:162
+msgid "email address"
+msgstr ""
+
+#: sanga/models.py:164
+msgid "staff status"
+msgstr ""
+
+#: sanga/models.py:165
+msgid "Designates whether the user can log into this admin site."
+msgstr ""
+
+#: sanga/models.py:166
+msgid "active"
+msgstr ""
+
+#: sanga/models.py:167
+msgid ""
+"Designates whether this user should be treated as active. Unselect this "
+"instead of deleting accounts."
+msgstr ""
+
+#: sanga/models.py:169
+msgid "date joined"
+msgstr ""
+
+#: sanga/models.py:177
+msgid "user"
+msgstr "Садху"
+
+#: sanga/models.py:178
+msgid "users"
+msgstr "Садхаки"
+
+#: sanga/models.py:209
+msgid "Photo"
+msgstr "Фото"
+
+#: sanga/models.py:212
+msgid "Date of filling in the questionnaire"
+msgstr "Дата заполнения анкеты"
+
+#: sanga/models.py:213
+msgid "Phone"
+msgstr "Телефон"
+
+#: sanga/models.py:214
+msgid "Skype, VK, Facebook"
+msgstr "Скайп, ВК, Фейсбук"
+
+#: sanga/models.py:218
+msgid "Note"
+msgstr "Комментарий"
+
+#: sanga/models.py:219
+msgid "Address"
+msgstr "Адрес"
+
+#: sanga/models.py:220
+msgid "Birthday"
+msgstr "День рождения"
+
+#: sanga/models.py:222
+msgid "Symbol of faith"
+msgstr "Символ Веры"
+
+#: sanga/models.py:223
+msgid "Sharanam"
+msgstr "Прибежище"
+
+#: sanga/models.py:224
+msgid "Place of Birth"
+msgstr "Место рождения"
+
+#: sanga/models.py:226
+msgid "Education"
+msgstr "Образование"
+
+#: sanga/models.py:227
+msgid "How can add rating"
+msgstr "Сколько заслуг может добавить"
+
+#: sanga/models.py:234
+msgid "Sadhu additional"
+msgstr "Дополнительная информация по садху"
+
+#: sanga/models.py:235
+msgid "Sadhus additional"
+msgstr "Дополнительная информация по садхакам"
+
+#~ msgid "rating_to"
+#~ msgstr "кого оценивают"
