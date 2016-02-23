@@ -8,8 +8,8 @@
     <div class="row">
         <div class="col-lg-12">
         <td>
-            {% if object.image %}
-                {% thumbnail object.image.file "250x250" crop="center" as im %}
+            {% if object.sadhuadditional.image %}
+                {% thumbnail object.sadhuadditional.image.file "250x250" crop="center" as im %}
                     <a href='{{ object.get_absolute_url }}' title="{{object.username}}">
                         <img src='{{im.url}}' alt='{{object.username}}' title='{{object.username}}'  width="{{ im.width }}" height="{{ im.height }}" class="img-rounded" />
                     </a>

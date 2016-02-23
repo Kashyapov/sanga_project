@@ -178,7 +178,7 @@ class Sadhu(AbstractBaseUser, PermissionsMixin):
         verbose_name_plural = _('users')
 
     def get_absolute_url(self):
-        return "/users/%s/" % self.id
+        return "/list/%s/" % self.id
 
     def get_full_name(self):
         """
@@ -204,7 +204,7 @@ class Sadhu(AbstractBaseUser, PermissionsMixin):
 
 
 class SadhuAdditional(models.Model):
-    sadhu = models.OneToOneField(Sadhu)
+    sadhu = models.OneToOneField(Sadhu, primary_key=True)
     sign_monk = models.ForeignKey(SignMonk, verbose_name=_('Sign monk'), blank=True, null=True, on_delete=models.PROTECT)
     image = models.ImageField(_('Photo'), upload_to='images', blank=True)
     country = models.ForeignKey(Country, verbose_name=_('Country'),blank=True, null=True, on_delete=models.PROTECT)
@@ -239,5 +239,25 @@ class SadhuAdditional(models.Model):
 
 
 
+class Place(models.Model):
+    name = models.CharField(max_length=50)
+    address = models.CharField(max_length=80)
 
+    def __str__(self):              # __unicode__ on Python 2
+        return "%s the place" % self.name
+
+class Restaurant(models.Model):
+    place = models.OneToOneField(Place, primary_key=True)
+    serves_hot_dogs = models.BooleanField(default=False)
+    serves_pizza = models.BooleanField(default=False)
+
+    def __str__(self):              # __unicode__ on Python 2
+        return "%s the restaurant" % self.place.name
+
+class Waiter(models.Model):
+    restaurant = models.ForeignKey(Restaurant)
+    name = models.CharField(max_length=50)
+
+    def __str__(self):              # __unicode__ on Python 2
+        return "%s the waiter at %s" % (self.name, self.restaurant)
 
